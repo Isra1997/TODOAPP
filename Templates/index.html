@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <title>To Do list</title>
+        <style>
+            .hidden{
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="error" class="hidden">Something went wrong!</div>
+        <form id='form' method="post" action="/todos/create">
+            <input type="text" name="description" id="description" />
+            <input type="submit" name="create" id="create"/> 
+        </form>
+        <ul id='todos'>
+            {% for d in data %}
+            <li>{{ d.description }}</li>
+            {% endfor %}
+        </ul>
+        <script>
+            document.getElementById('form').onsubmit = function(e){
+                e.preventDefault();
+                fetch('/todos/create',{
+                    method: 'post',
+                    body: JSON.stringify({
+                        'description': document.getElementById('description').value
+                    }),
+                    headers: {'Content-Type': 'application/json'}
+                    
+                })
+                .then(function(response){
+                    return response.json();
+                })
+                .then(function(jsonResponse){
+                    console.log(jsonResponse)
+                    const liitem = document.createElement('LI');
+                    liitem.innerHTML = jsonResponse['description'];
+                    document.getElementById('todos').appendChild(liitem);
+                    document.getElementById('error').className = 'hidden';
+                })
+                .catch(function(){
+                    document.getElementById('error').className = '';
+                });
+            }
+        </script>
+    </body>
+</html>
