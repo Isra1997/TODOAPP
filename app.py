@@ -2,19 +2,22 @@ from flask import Flask,render_template,request,jsonify,abort
 
 from flask_sqlalchemy import SQLAlchemy
 import sys
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://israragheb@localhost:5432/todoapp'
 db = SQLAlchemy(app)
+mirgrate = Migrate(app,db)
 
 class Todo(db.Model):
     __tablename__ = 'todos'
     id = db.Column(db.Integer, primary_key = True)
     description = db.Column(db.String(), nullable = False)
+    commpeleted = db.Column(db.Boolean, nullable = False, default = False )
     def reper(self):
         return f'<todo: {self.id}, {self.description}>'
 
-db.create_all()
+
 
 @app.route('/todos/create',methods=['post'])
 def create_todo():
